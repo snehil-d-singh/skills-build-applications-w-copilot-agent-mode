@@ -28,22 +28,19 @@ OctoFit Tracker is a three-tier application for a school fitness program. The st
 
 ## Implementation decisions
 
-Record your plan here before editing code.
-
-- Presentation tier decision:
-- Logic tier decision:
-- Data tier decision:
-- Activity tracking approach:
-- Team management approach:
-- Leaderboard approach:
-- Workout suggestions approach:
+- Presentation tier decision: Keep each capability in its route component, share API loading/error handling, and render accessible loading, empty, success, and error states.
+- Logic tier decision: Keep request validation and business behavior in the service layer; routes only translate service results and errors into HTTP responses.
+- Data tier decision: Express required fields and valid ranges in Mongoose schemas, and retain stable, idempotent seed upserts without clearing unrelated records.
+- Activity tracking approach: Validate activity input and existing user/team IDs, then store the submitted references, activity type, minutes, computed points, and timestamp.
+- Team management approach: Require a name and mascot, validate supplied member IDs, and keep team memberships synchronized with each user's team reference.
+- Leaderboard approach: Sum activity points by team, include teams with no activities, sort by total points, and assign ranks.
+- Workout suggestions approach: Match available workouts to the user's goal, fall back to recent activity focus when needed, and explain the recommendation.
 
 ## Test plan
 
-Record the commands you run and what each failure means.
-
-- Data-tier command: `npm run test:data --prefix octofit-tracker/backend`
-- API command: `npm run test:api --prefix octofit-tracker/backend`
-- Frontend command: `npm test --prefix octofit-tracker/frontend`
-- Backend build command: `npm run build --prefix octofit-tracker/backend`
-- Frontend build command: `npm run build --prefix octofit-tracker/frontend`
+- Data-tier command: `npm run test:data --prefix octofit-tracker/backend`; schema checks pass independently, while the seed integration test requires MongoDB.
+- API command: `npm run test:api --prefix octofit-tracker/backend`; requires the MongoDB binary used by `mongodb-memory-server`.
+- Frontend command: `npm test --prefix octofit-tracker/frontend`; verifies data rendering and loading, empty, and error states.
+- Backend build command: `npm run build --prefix octofit-tracker/backend`; checks TypeScript.
+- Frontend build command: `npm run build --prefix octofit-tracker/frontend`; checks TypeScript and creates the production bundle.
+- Environment limitation: `mongodb-memory-server` cannot download its binary when `fastdl.mongodb.org` is unreachable, so data/API integration suites cannot complete in this environment.
